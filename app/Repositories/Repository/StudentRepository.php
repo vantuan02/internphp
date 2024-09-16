@@ -6,7 +6,6 @@ use App\Jobs\SendStudentLoginInfoJob;
 use App\Models\Student;
 use App\Models\User;
 use App\Repositories\BaseRepository;
-use App\Repositories\BaseRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +28,7 @@ class StudentRepository extends BaseRepository
 
         if (isset($param['from_age']) && $param['from_age'] >= 0) {
             $age = Carbon::now()->subYears($param['from_age'])->toDateString();
-            $students = $students->where('birthday', "<=", $age);
+            $students->where('birthday', "<=", $age);
         }
         if (isset($param['to_age']) && $param['to_age'] >= 0) {
             $age = Carbon::now()->subYears($param['to_age'])->toDateString();
@@ -57,7 +56,7 @@ class StudentRepository extends BaseRepository
                     'vina' => '^(07)[0-9]{8}$',
                 };
             }, $param['type_phone']);
-
+            // dd($patterns);
             $students->where('phone', 'regexp', implode('|', $patterns));
         }
         return $students->paginate($page);
@@ -83,7 +82,7 @@ class StudentRepository extends BaseRepository
             }
 
             $attributes['user_id'] = $user->id;
-            $attributes['image'] = $url;
+            $attributes['image'] = basename($url);
 
             $student = $this->model->create($attributes);
 
@@ -96,31 +95,36 @@ class StudentRepository extends BaseRepository
             throw $e;
         }
     }
-    
+
     public function updateStudent($id, $attributes)
     {
-      $student = $this->model->findOrFail($id);
-  
-      DB::beginTransaction();
-      try {
-        $user = $student->user;
-        $user->update($attributes);
-  
-        if (isset($attributes['image'])) {
-            $url = Storage::put('public', $attributes['image']);
-        } else {
-            $url = '';
+        $student = $this->model->findOrFail($id);
+        
+        DB::beginTransaction();
+        try {
+            $user = $student->user;
+            $user->update($attributes);
+            if (isset($attributes['image'])) {
+                $url = Storage::put('public', $attributes['image']);
+            
+                // Kiểm tra và xóa tệp tin cũ
+                if (!empty($student->image) && Storage::exists('public' . $student->image)) {
+                    Storage::delete('public' . $student->image);
+                }
+            } else {
+                // Giữ lại đường dẫn hình ảnh cũ nếu không có tệp tin mới
+                $url = $student->image;
+            }
+
+            $attributes['image'] = basename($url);
+            $student->update($attributes);
+
+            DB::commit();
+            return $student;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
-  
-        $attributes['image'] = $url;
-        $student->update($attributes);
-  
-        DB::commit();
-        return $student;
-      } catch (\Exception $e) {
-        DB::rollBack();
-        throw $e;
-      }
     }
 
     public function registerSubjects($idSubject)
@@ -139,32 +143,31 @@ class StudentRepository extends BaseRepository
 
     public function unRegisterSubjects($idSubject)
     {
-      $student = $this->model->findOrFail(Auth::user()->student->id);
-      $student->subjects()->detach($idSubject);
-      return true;
+        $student = $this->model->findOrFail(Auth::user()->student->id);
+        $student->subjects()->detach($idSubject);
+        return true;
     }
 
     public function updateScore($idStudent, $scoreSubject)
     {
-      $student = $this->model->findOrFail($idStudent);
-   
-      DB::beginTransaction();
-      try {
-        $syncData = collect($scoreSubject['subjects'])
-        ->combine($scoreSubject['scores'])
-        ->mapWithKeys(function ($score, $subjectId) {
-          return [$subjectId => ['score' => $score]];
-        })
-        ->toArray();
-   
-        $student->subjects()->sync($syncData);
-   
-        DB::commit();
-        return true;
-      } catch (\Exception $e) {
-        DB::rollBack();
-        throw $e;
-      }
+        $student = $this->model->findOrFail($idStudent);
+
+        DB::beginTransaction();
+        try {
+            $syncData = collect($scoreSubject['subjects'])
+                ->combine($scoreSubject['scores'])
+                ->mapWithKeys(function ($score, $subjectId) {
+                    return [$subjectId => ['score' => $score]];
+                })
+                ->toArray();
+
+            $student->subjects()->sync($syncData);
+
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
-    
 }

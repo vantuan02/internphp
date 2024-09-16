@@ -34,11 +34,11 @@ Route::middleware(['auth', 'verified'])->group(function (){
     
     Route::get('profile/{id}', [ProfileController::class, 'index'])->name('students.profile');
 
-    Route::get('register-subject', [ProfileController::class, 'showRegisterSubjects'])->name('students.registerSubject');
+    Route::get('show-register-subject', [ProfileController::class, 'showRegisterSubjects'])->name('students.registerSubject');
 
     Route::post('register-subject/{id}', [ProfileController::class, 'registerSubjects'])->name('students.registerSubjects');
 
-    Route::post('register-list-subject', [ProfileController::class, 'registerListSubjects'])->name('students.registerListSubjects');
+    Route::post('register-more-subject', [ProfileController::class, 'registerMoreSubjects'])->name('students.moreSubjects');
 
     Route::post('unregister-subject/{id}', [ProfileController::class, 'unRegisterSubjects'])->name('students.unRegisterSubjects');
 

@@ -22,7 +22,8 @@ class ScoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'courses.*' => 'required|exists:courses,id',
+            'scores.*' => 'required|numeric|min:0|max:10',
         ];
     }
 }

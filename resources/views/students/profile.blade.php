@@ -4,11 +4,6 @@
         <h1>
             User Profile
         </h1>
-        <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li><a href="#">User</a></li>
-            <li class="active">User profile</li>
-        </ol>
     </section>
 
     <section class="content">
@@ -24,15 +19,15 @@
                             </div>
                         @endif
 
-                        <h3 class="profile-username text-center">{{ $student->user->name }}</h3>
+                        <h3 class="profile-username">{{ $student->user->name }}</h3>
 
-                        <p class="text-muted text-center">{{ $student->student_code }}-{{ $student->department->name }}
+                        <p class="text-muted">{{ $student->student_code }}-{{ $student->department->name }}
                         </p>
                     </div>
-                    <p class="text-muted text-center">Birthday :
+                    <p class="text-muted">Birthday :
                         {{ $student->birthday }}</p>
-                    <p class="text-muted text-center">Gender :
-                        {{ $student->gender == 0 ? 'Male' : 'FeMale' }}</p>
+                    <p class="text-muted">Gender :
+                        {{ $student->gender == 0 ? 'Female' : 'Male' }}</p>
                     <!-- /.box-body -->
                 </div>
                 <!-- /.box -->
@@ -41,15 +36,23 @@
             <div class="col-md-9">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#activity" data-toggle="tab">Detail</a></li>
+                        <li class="active"><a href="{{ route('students.registerSubject') }}" data-toggle="tab">Detail</a>
+                        </li>
                     </ul>
                     <div class="tab-content">
                         <div class="active tab-pane" id="activity">
                             <h1>My Subjects</h1>
+                            @role('student')
+                                <a href="{{ route('students.registerSubject') }}">
+                                    {!! Form::button('Register Subject', ['class' => 'btn btn-primary']) !!}
+                                </a>
+                            @endrole
                             <table class="table table-bordered text-center">
                                 <tbody>
                                     <tr>
-                                        {!! Form::button('Add score', ['class' => 'btn btn-primary add-select', 'id' => 'add-select']) !!}
+                                        @role('admin')
+                                            {!! Form::button('Add score', ['class' => 'btn btn-primary add-select', 'id' => 'add-select']) !!}
+                                        @endrole
                                         <hr>
                                         {!! Form::open(['method' => 'Post', 'url' => 'update-score/' . $student->id]) !!}
                                         <div id="divSelect">
@@ -102,23 +105,27 @@
                                                                     {{ $message }}</div>
                                                             @enderror
                                                         </div>
-                                                        <div class="col-md-2 d-flex align-items-center">
-                                                            {!! Form::button('x', ['class' => 'btn btn-danger remove-button', 'data-id' => '{{ $index }}']) !!}
-                                                        </div>
+                                                        @role('admin')
+                                                            <div class="col-md-2 d-flex align-items-center">
+                                                                {!! Form::button('x', ['class' => 'btn btn-danger remove-button', 'data-id' => '{{ $index }}']) !!}
+                                                            </div>
+                                                        @endrole
                                                     </div>
                                                 @endforeach
                                             @endif
                                         </div>
                                     </tr>
                                     <br>
-                                    {!! Form::submit('Update', ['class' => 'btn btn-success']) !!}
+                                    @role('admin')
+                                        {!! Form::submit('Update', ['class' => 'btn btn-success']) !!}
+                                    @endrole
                                     {!! Form::close() !!}
                         </div>
                     </div>
                 </div>
                 <tr>
                     <td colspan="3">
-                        <h4 class="text-danger d-flex justify-content-end">Medium Score:
+                        <h4 class="text-danger d-flex justify-content-center">Medium Score:
                             {{ round($student->subjects->avg('pivot.score'), 2) }}
                         </h4>
                     </td>
@@ -141,42 +148,43 @@
         $(document).ready(function() {
             let subjects = @json($subjects->pluck('name', 'id'));
             let counter = {{ count(old('subjects', [])) }};
-            let scores = @json($student->subjects->pluck('pivot.score', 'id'));
 
-            $('.activity').on('click','.add-select', function(e) {
-                e.preventDefault();
+            // Hàm tạo options cho select box
+            const createOptions = () => Object.entries(subjects)
+                .map(([id, name]) => `<option value="${id}">${name}</option>`)
+                .join('');
 
-                let options = '';
-                $.each(subjects, function(id, name) {
-                    options += `<option value="${id}">${name}</option>`;
-                });
-
-                let selectHTML = 
-        `<div class="form-select row mb-3" id="div-${counter}">
-          <div class="col-md-5">
-            <select name="subjects[]" class="form-control">
-              <option value="">Choose a subject</option>
-              ${ options }
-            </select>
-            <span class="error-subject text-danger"></span>
-          </div>
-          <div class="col-md-5">
-            <input type="text" name="scores[]" class="form-control" placeholder="Enter Score">
-          </div>
-          <div class="col-md-2 d-flex align-items-center">
-            <button class="btn btn-danger remove-button" data-id="${counter}">x</button>
-          </div>
-        </div>`;
-
-                $('#divSelect').append(selectHTML);
+            // Hàm thêm select
+            const addSelect = () => {
+                $('#divSelect').append(`
+                    <div class="form-select row mb-3" id="div-${counter}">
+                        <div class="col-md-5">
+                            <select name="subjects[]" class="form-control">
+                                <option value="">Choose a subject</option>
+                                ${createOptions()}
+                            </select>
+                            <span class="error-subject text-danger"></span>
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" name="scores[]" class="form-control" placeholder="Enter Score">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center">
+                            <button class="btn btn-danger remove-button" data-id="${counter}">x</button>
+                        </div>
+                    </div>
+                `);
                 counter++;
-                updateSelect();
+            };
+
+            // Sự kiện thêm select mới
+            $('.add-select').on('click', function(e) {
+                e.preventDefault();
+                addSelect();
             });
 
+            // Sự kiện xóa select
             $(document).on('click', '.remove-button', function() {
-                const id = $(this).data('id');
-                $(`#div-${id}`).remove();
-                updateSelect();
+                $(`#div-${$(this).data('id')}`).remove();
             });
         });
     </script>

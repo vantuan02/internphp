@@ -1,0 +1,21 @@
+.table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed; /* Đảm bảo bảng không tràn */
+    word-wrap: break-word; /* Bắt từ quá dài xuống dòng */
+}
+
+th, td {
+    white-space: nowrap; /* Đảm bảo nội dung không bị xuống dòng */
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+}

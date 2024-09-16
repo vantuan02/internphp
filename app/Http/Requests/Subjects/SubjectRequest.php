@@ -24,7 +24,7 @@ class SubjectRequest extends FormRequest
         return [
             'name'=>'required|string|max:50',
             'description'=>'required|max:10000',
-            'department_id'=>'required'
+            'department_id'=>'required',
         ];
     }
 }

@@ -63,29 +63,30 @@ class StudentController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'student_code' => $student->student_code,
+            'birthday' => $student->birthday,
             'phone' => $student->phone,
             'address' => $student->address,
-            'birthday' => $student->birthday,
+            'status' => $student->status,
             'image' => $student->image,
             'department_id' => $student->department_id,
             'gender' => $student->gender
         ]);
-        dd($student);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(StudentRequest $request, string $id)
+    public function update(StudentRequest $stuRequest, string $id)
     {
         try {
-            $this->studentRepository->update($id, $request->all());
+            $this->studentRepository->updateStudent($id, $stuRequest->all());
             session()->flash('success', 'Student updated successfully!');
             return response()->json([
                 'redirect_url' => route('students.index')
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to update student!'], 500);
+            throw $e;
         }
     }
 
