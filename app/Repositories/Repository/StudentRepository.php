@@ -99,14 +99,14 @@ class StudentRepository extends BaseRepository
     public function updateStudent($id, $attributes)
     {
         $student = $this->model->findOrFail($id);
-        
+
         DB::beginTransaction();
         try {
             $user = $student->user;
             $user->update($attributes);
             if (isset($attributes['image'])) {
                 $url = Storage::put('public', $attributes['image']);
-            
+
                 // Kiểm tra và xóa tệp tin cũ
                 if (!empty($student->image) && Storage::exists('public' . $student->image)) {
                     Storage::delete('public' . $student->image);
@@ -160,8 +160,8 @@ class StudentRepository extends BaseRepository
                     return [$subjectId => ['score' => $score]];
                 })
                 ->toArray();
-
-            $student->subjects()->sync($syncData);
+            // dd($syncData);
+            $student->subjects()->syncWithoutDetaching($syncData);
 
             DB::commit();
             return true;

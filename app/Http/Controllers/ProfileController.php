@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ScoreRequest;
 use App\Repositories\Repository\StudentRepository;
 use App\Repositories\Repository\SubjectRepository;
 use Illuminate\Http\Request;
@@ -53,9 +54,10 @@ class ProfileController extends Controller
         return redirect()->route("students.registerSubject")->with("success", "Unregister subject successfully!");
     }
 
-    public function updateScore(Request $request, $id)
+    public function updateScore(ScoreRequest $scoreRequest, $id)
     {
-        $this->studentRepository->updateScore($id, $request->all());
+        $this->studentRepository->updateScore($id, $scoreRequest->all());
+        // dd($scoreRequest->all());
         return redirect()->route("students.profile", $id)->with("success", "Update score by subject successfully!");
     }
 }

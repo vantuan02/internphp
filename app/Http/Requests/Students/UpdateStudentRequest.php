@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Students;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ScoreRequest extends FormRequest
+class UpdateStudentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,12 +21,15 @@ class ScoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
-            'subjects' => 'required|array',
-            'subjects.*' => 'required|exists:subjects,id',
-            'scores' => 'required|array',
-            'scores.*' => 'required|numeric|min:0|max:100',
+        return [
+            'student_code'=>'required|max:10',
+            'birthday'=>'required',
+            'gender'=>'required',
+            'phone'=>'required',
+            'address'=>'required',
+            'status'=>'required',
+            'department_id'=>'required',
+            'name'=>'required|max:50',
         ];
-        return $rules;
     }
 }

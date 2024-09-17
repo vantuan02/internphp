@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Students\StudentRequest;
-use App\Models\Student;
+use App\Http\Requests\Students\UpdateStudentRequest;
 use App\Repositories\Repository\DepartmentRepository;
 use App\Repositories\Repository\StudentRepository;
 use App\Repositories\Repository\UserRepository;
@@ -76,7 +76,7 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StudentRequest $stuRequest, string $id)
+    public function update(UpdateStudentRequest $stuRequest, string $id)
     {
         try {
             $this->studentRepository->updateStudent($id, $stuRequest->all());
