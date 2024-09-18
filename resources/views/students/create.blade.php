@@ -77,9 +77,9 @@
         </div>
         <div class="form-group">
             {!! Form::label('email', 'Email') !!}
-            {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => 'Enter your email']) !!}
+            {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => 'Enter your email']) !!}
 
-            @error('address')
+            @error('email')
                 <small class="text-danger">{{ $message }}</small>
             @enderror
         </div>

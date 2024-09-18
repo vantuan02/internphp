@@ -22,9 +22,9 @@ class ScoreRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'subjects' => 'required|array',
+            'subjects' => 'required|array|present',
             'subjects.*' => 'required|exists:subjects,id',
-            'scores' => 'required|array',
+            'scores' => 'required|array|present',
             'scores.*' => 'required|numeric|min:0|max:100',
         ];
         return $rules;

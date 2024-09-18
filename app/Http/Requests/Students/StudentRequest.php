@@ -31,7 +31,7 @@ class StudentRequest extends FormRequest
             'status'=>'required',
             'department_id'=>'required',
             'name'=>'required|max:50',
-            'email'=>'required|unique:users,email|max:100',
+            'email'=>'required|email|unique:users,email|max:100',
             'password'=>'required|min:8',
         ];
     }

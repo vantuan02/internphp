@@ -166,14 +166,13 @@
             };
 
             const updateSelectOptions = () => {
-                let selectedSubjects = getSelectedSubjects(); // Lấy danh sách các môn học đã được chọn
+                let selectedSubjects = getSelectedSubjects();
                 $('.subject-select').each(function() {
-                    // Lấy giá trị hiện tại của mỗi select
                     let currentValue = $(this).val();
                     console.log('Current value:', currentValue);
                     $(this).html(createOptions(selectedSubjects,
-                    currentValue)); // Cập nhật các tùy chọn
-                    $(this).val(currentValue); // Đặt lại giá trị cho select này
+                        currentValue));
+                    $(this).val(currentValue);
                     console.log('After update:', $(this).val());
                 });
             };
@@ -196,6 +195,7 @@
             //     console.log(formData); // In ra giá trị của form vào console để kiểm tra
             //     // Sau khi kiểm tra, bạn có thể gửi form bằng cách bỏ dòng e.preventDefault();
             // });
+
             updateSelectOptions();
         });
     </script>
