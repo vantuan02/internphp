@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\StatusNotification;
 use App\Models\Student;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -27,28 +28,19 @@ class CalculateAverageScore extends Command
      */
     public function handle()
     {
-        $students = Student::whereHas('subjects', function($query) {
-            // Kiểm tra sinh viên đã học xong tất cả các môn học
-            $query->whereNotNull('pivot.score');
+        $students = Student::whereHas('subjects', function ($query) {
+            $query->whereNotNull('student_subject.score');
         })->get();
 
         foreach ($students as $student) {
-            // Tính điểm trung bình
             $averageScore = $student->subjects->avg('pivot.score');
-            
-            // Kiểm tra nếu điểm dưới 5
+
             if ($averageScore < 5) {
-                // Đánh dấu sinh viên đã bị thôi học
-                $student->update(['status' => 'expelled']);
 
-                // Gửi email thông báo
-                Mail::to($student->user->email)->send(new \App\Mail\StatusNotification($student, $averageScore));
+                Mail::to($student->user->email)->send(new StatusNotification($student, $averageScore));
 
-                $this->info("Đã gửi email thông báo thôi học cho sinh viên: {$student->user->name}");
+                $student->update(['status' => '1']);
             }
         }
-
-        $this->info('Đã tính điểm trung bình và gửi thông báo nếu cần thiết.');
     }
-    
 }
