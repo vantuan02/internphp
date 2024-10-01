@@ -33,6 +33,14 @@
                     </p>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('students.table') }}" class="nav-link">
+                    <i class="bi bi-grid-3x3"></i>
+                    <p>
+                        {{ __('Scores') }}
+                    </p>
+                </a>
+            </li>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
             </form>

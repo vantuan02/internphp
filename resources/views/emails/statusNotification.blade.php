@@ -14,5 +14,6 @@
 
     <p>Trân trọng,</p>
     <p>Phòng Đào Tạo</p>
+    <p>----Đại học điện lực----</p>
 </body>
 </html>

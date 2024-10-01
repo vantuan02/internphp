@@ -27,6 +27,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
     {
         return $this->model->paginate($page);
     }
+    
+    public function getAll(){
+    return $this->model->all();
+    }
 
     /**
      * Find a record by its ID.

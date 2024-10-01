@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ScoreRequest extends FormRequest
+class ImportStudentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,7 @@ class ScoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'subjects' => 'required|array|present',
-            'subjects.*' => 'required|exists:subjects,id',
-            'scores' => 'required|array|present',
-            'scores.*' => 'required|numeric|min:0|max:100',
+            'file' => 'required|mimes:xlsx,xls',
         ];
     }
 }

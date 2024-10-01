@@ -12,7 +12,7 @@ class SubjectRepository extends BaseRepository
     {
         parent::__construct($subject);
     }
-    public function getSubjects($page)
+    public function getSubject($page)
     {
       return $this->model->paginate($page);
     }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\Gender;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +14,7 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->string('student_code', 10);
-            $table->tinyInteger('gender')->unsigned()->default(Gender::Male);
+            $table->tinyInteger('gender')->unsigned();
             $table->date('birthday');
             $table->string('phone', 10);
             $table->string('email', 50);

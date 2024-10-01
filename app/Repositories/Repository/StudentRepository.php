@@ -22,7 +22,7 @@ class StudentRepository extends BaseRepository
         $this->user = $user;
     }
 
-    public function getAllStudent($page, $param)
+    public function getAllStudent($perPage, $param)
     {
         $students = $this->model::with(['department:id,name', 'subjects', 'user:id,name,email'])->withCount("subjects");
 
@@ -59,7 +59,7 @@ class StudentRepository extends BaseRepository
             // dd($patterns);
             $students->where('phone', 'regexp', implode('|', $patterns));
         }
-        return $students->paginate($page);
+        return $students->paginate($perPage);
     }
 
     public function createStudent($attributes)
@@ -107,12 +107,11 @@ class StudentRepository extends BaseRepository
             if (isset($attributes['image'])) {
                 $url = Storage::put('public', $attributes['image']);
 
-                // Kiểm tra và xóa tệp tin cũ
                 if (!empty($student->image) && Storage::exists('public' . $student->image)) {
                     Storage::delete('public' . $student->image);
                 }
             } else {
-                // Giữ lại đường dẫn hình ảnh cũ nếu không có tệp tin mới
+
                 $url = $student->image;
             }
 
@@ -127,21 +126,20 @@ class StudentRepository extends BaseRepository
         }
     }
 
-    public function registerSubjects($idSubject)
+    public function registerSubject($idSubject)
     {
         $student = $this->model->findOrFail(Auth::user()->student->id);
+    
         if (is_array($idSubject)) {
-            foreach ($idSubject as $subject) {
-                $student->subjects()->attach($subject);
-            }
+            $student->subjects()->attach($idSubject);
         } else {
             $student->subjects()->attach($idSubject);
         }
-
+    
         return true;
     }
 
-    public function unRegisterSubjects($idSubject)
+    public function unRegisterSubject($idSubject)
     {
         $student = $this->model->findOrFail(Auth::user()->student->id);
         $student->subjects()->detach($idSubject);
@@ -161,7 +159,7 @@ class StudentRepository extends BaseRepository
                 })
                 ->toArray();
             // dd($syncData);
-            $student->subjects()->syncWithoutDetaching($syncData);
+            $student->subjects()->sync($syncData);
 
             DB::commit();
             return true;

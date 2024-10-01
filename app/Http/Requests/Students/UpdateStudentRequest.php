@@ -25,11 +25,11 @@ class UpdateStudentRequest extends FormRequest
             'student_code'=>'required|max:10',
             'birthday'=>'required',
             'gender'=>'required',
-            'phone'=>'required',
+            'phone'=>'required|digits:10',
             'address'=>'required',
             'status'=>'required',
             'department_id'=>'required',
-            'name'=>'required|max:50',
+            'name'=>'required|string|max:50',
         ];
     }
 }

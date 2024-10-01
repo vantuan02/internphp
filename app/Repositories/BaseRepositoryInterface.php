@@ -5,6 +5,7 @@ namespace App\Repositories;
 interface BaseRepositoryInterface
 {
     public function all($page);
+    public function getAll();
     public function find($id);
     public function findOrFail($id);
     public function create(array $data);

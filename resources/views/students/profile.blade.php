@@ -50,7 +50,7 @@
                         @foreach (old('subjects') as $index => $select)
                             <div class="form-select row mb-3" id="div-{{ $index }}">
                                 <div class="col-md-5">
-                                    {!! Form::select('subjects[]', $subjects->pluck('name', 'id')->toArray(), old('subjects')[$index], [
+                                    {!! Form::select('subjects[] ?? null', $subjects->pluck('name', 'id')->toArray(), old('subjects')[$index] ?? null, [
                                         'class' => 'form-control subject-select',
                                         'placeholder' => '- Choose subjects -',
                                     ]) !!}
@@ -59,7 +59,10 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-5">
-                                    {!! Form::text('scores[]', old('scores')[$index], ['class' => 'form-control', 'placeholder' => 'Enter score']) !!}
+                                    {!! Form::text('scores[] ?? null', old('scores')[$index] ?? '', [
+                                        'class' => 'form-control',
+                                        'placeholder' => 'Enter score',
+                                    ]) !!}
                                     @error('scores.' . $index)
                                         <span class="error-score text-danger">{{ $message }}</span>
                                     @enderror
@@ -74,15 +77,16 @@
                         @foreach ($studentSubjects as $index => $subjects)
                             <div class="form-select row mb-3" id="div-{{ $index }}">
                                 <div class="col-md-5">
-                                    {!! Form::select('subjects[]', $subjects->pluck('name', 'id')->toArray(), $subjects->id, [
+                                    {!! Form::select('subjects[] ?? null', $subjects->pluck('name', 'id')->toArray(), $subjects->id, [
                                         'class' => 'form-control subject-select',
+                                        'placeholder' => '- Choose subjects -',
                                     ]) !!}
                                     @error('subjects.' . $index)
                                         <span class="error-subject text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="col-md-5">
-                                    {!! Form::text('scores[]', $subjects->pivot->score, ['class' => 'form-control', 'placeholder' => 'Enter score']) !!}
+                                    {!! Form::text('scores[] ?? null', $subjects->pivot->score, ['class' => 'form-control', 'placeholder' => 'Enter score']) !!}
                                     @error('scores.' . $index)
                                         <span class="error-score text-danger">{{ $message }}</span>
                                     @enderror
@@ -135,10 +139,11 @@
                         <option value="">Chọn môn học</option>
                         ${createOptions(selectedSubjects)}
                     </select>
-                    <span class="error-subject text-danger"></span>
+                    <span class="error-subjects text-danger"></span>
                 </div>
                 <div class="col-md-5">
                     <input type="text" name="scores[]" class="form-control">
+                    <span class="error-scores text-danger"></span>
                 </div>
                 <div class="col-md-2 d-flex align-items-center">
                     <button class="btn btn-danger remove-button" data-id="${counter}">x</button>
@@ -169,11 +174,9 @@
                 let selectedSubjects = getSelectedSubjects();
                 $('.subject-select').each(function() {
                     let currentValue = $(this).val();
-                    console.log('Current value:', currentValue);
                     $(this).html(createOptions(selectedSubjects,
                         currentValue));
                     $(this).val(currentValue);
-                    console.log('After update:', $(this).val());
                 });
             };
 

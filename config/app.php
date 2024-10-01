@@ -173,7 +173,6 @@ return [
         App\Providers\HelperServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
 
-
     ])->toArray(),
 
     /*

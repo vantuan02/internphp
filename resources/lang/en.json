@@ -14,5 +14,6 @@
     "Action": "Action",
     "Studying": "Studying",
     "Stopped": "Stopped",
-    "Completed": "Completed"
+    "Completed": "Completed",
+    "Perpage": "Record perpage:"
 }

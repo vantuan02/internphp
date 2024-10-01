@@ -72,6 +72,22 @@
     </div>
     {!! Form::close() !!}
 
+    {!! Form::open(['route' => 'students.index', 'method' => 'GET']) !!}
+    {!! Form::label('perPage', 'Records per page:') !!}
+
+    {!! Form::select(
+        'perPage',
+        [
+            100 => '100',
+            1000 => '1000',
+            3000 => '3000',
+        ],
+        request('perPage'),
+        ['onchange' => 'this.form.submit()'],
+    ) !!}
+
+    {!! Form::close() !!}
+
     <hr>
     <div class="table-responsive">
         <table class="table table-bordered text-center">
@@ -94,8 +110,19 @@
                     <th scope="col">Action</th>
                 </tr>
                 <hr>
-                <button class="btn btn-primary"><a href="{{ route('students.create') }}"
-                        style="color: #fff;">{{ __('Create') }}</a></button>
+                <div class="row">
+                        <button class="btn btn-primary"><a href="{{ route('students.create') }}"
+                                style="color: #fff;">{{ __('Create') }}</a></button>
+                                
+                    <div class="col-lg-2">
+                        <a href="{{ route('students.export') }}" class="btn btn-primary">Export student to Excel</a>
+                    </div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#importModal">
+                        Import Students
+                    </button>
+
+                </div>
+                <hr>
             </thead>
             <tbody>
                 @foreach ($students as $student)
@@ -167,6 +194,7 @@
         {{ $students->appends(request()->all())->links() }}
     </div>
     @include('students.edit')
+    @include('students.importStudent')
 @endsection
 
 @push('scripts')
@@ -207,9 +235,16 @@
                 });
             });
 
+            $('#uploadBtn').click(function() {
+                $('#importForm').submit(); // Submit form upload file
+            });
 
             $('#closeModal').on('click', function() {
                 $('#editStudentModal').modal('hide');
+            });
+
+            $('#uploadBtn').click(function() {
+                $('#importForm').submit(); // Submit form upload file
             });
 
             $('#updateStudentForm').on('submit', function(e) {
@@ -234,13 +269,52 @@
 
                     },
                     error: function(response) {
-                        var errors = response.responseJSON.errors;
-                        var errorHtml = '<ul>';
-                        $.each(errors, function(key, value) {
-                            errorHtml += '<li>' + value + '</li>';
-                        });
-                        errorHtml += '</ul>';
-                        alert('Error:\n' + errorHtml);
+                        // Clear previous errors
+                        $('#error-name').text('');
+                        $('#error-student_code').text('');
+                        $('#error-birthday').text('');
+                        $('#error-gender').text('');
+                        $('#error-phone').text('');
+                        $('#error-address').text('');
+                        $('#error-status').text('');
+                        $('#error-department_id').text('');
+
+
+                        // You can clear other errors similarly
+
+                        // Check for validation errors in the response
+                        if (response.status === 422) {
+                            var errors = response.responseJSON.errors;
+
+                            // Display errors for each field
+                            if (errors.name) {
+                                $('#error-name').text(errors.name[0]);
+                            }
+                            if (errors.student_code) {
+                                $('#error-student_code').text(errors.student_code[0]);
+                            }
+                            if (errors.birthday) {
+                                $('#error-birthday').text(errors.birthday[0]);
+                            }
+                            if (errors.gender) {
+                                $('#error-gender').text(errors.gender[0]);
+                            }
+                            if (errors.phone) {
+                                $('#error-phone').text(errors.phone[0]);
+                            }
+                            if (errors.address) {
+                                $('#error-address').text(errors.address[0]);
+                            }
+                            if (errors.status) {
+                                $('#error-status').text(errors.status[0]);
+                            }
+                            if (errors.department_id) {
+                                $('#error-department_id').text(errors.department_id[0]);
+                            }
+                            // Add other fields similarly
+                        } else {
+                            alert('An unexpected error occurred.');
+                        }
                     }
                 });
             });
