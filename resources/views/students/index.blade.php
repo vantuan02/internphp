@@ -6,7 +6,6 @@
             <small>Control panel</small>
         </h1>
     </section>
-    </form>
     <hr>
     <div class="form-inline">
         {!! Form::open(['route' => ['students.index'], 'method' => 'get']) !!}
@@ -111,16 +110,16 @@
                 </tr>
                 <hr>
                 <div class="row">
-                        <button class="btn btn-primary"><a href="{{ route('students.create') }}"
-                                style="color: #fff;">{{ __('Create') }}</a></button>
-                                
                     <div class="col-lg-2">
-                        <a href="{{ route('students.export') }}" class="btn btn-primary">Export student to Excel</a>
+                    <button class="btn btn-primary"><a href="{{ route('students.create') }}"
+                            style="color: #fff;">{{ __('Create') }}</a></button>
+                    </div>
+                    <div class="col-lg-2">
+                        <a href="{{ route('students.export') }}" class="btn btn-primary">Export student</a>
                     </div>
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#importModal">
-                        Import Students
+                        Import Score
                     </button>
-
                 </div>
                 <hr>
             </thead>
@@ -269,52 +268,13 @@
 
                     },
                     error: function(response) {
-                        // Clear previous errors
-                        $('#error-name').text('');
-                        $('#error-student_code').text('');
-                        $('#error-birthday').text('');
-                        $('#error-gender').text('');
-                        $('#error-phone').text('');
-                        $('#error-address').text('');
-                        $('#error-status').text('');
-                        $('#error-department_id').text('');
-
-
-                        // You can clear other errors similarly
-
-                        // Check for validation errors in the response
-                        if (response.status === 422) {
-                            var errors = response.responseJSON.errors;
-
-                            // Display errors for each field
-                            if (errors.name) {
-                                $('#error-name').text(errors.name[0]);
-                            }
-                            if (errors.student_code) {
-                                $('#error-student_code').text(errors.student_code[0]);
-                            }
-                            if (errors.birthday) {
-                                $('#error-birthday').text(errors.birthday[0]);
-                            }
-                            if (errors.gender) {
-                                $('#error-gender').text(errors.gender[0]);
-                            }
-                            if (errors.phone) {
-                                $('#error-phone').text(errors.phone[0]);
-                            }
-                            if (errors.address) {
-                                $('#error-address').text(errors.address[0]);
-                            }
-                            if (errors.status) {
-                                $('#error-status').text(errors.status[0]);
-                            }
-                            if (errors.department_id) {
-                                $('#error-department_id').text(errors.department_id[0]);
-                            }
-                            // Add other fields similarly
-                        } else {
-                            alert('An unexpected error occurred.');
-                        }
+                        var errors = response.responseJSON.errors;
+                        var errorHtml = '<ul>';
+                        $.each(errors, function(key, value) {
+                            errorHtml += '<li>' + value + '</li>';
+                        });
+                        errorHtml += '</ul>';
+                        alert('Error:\n' + errorHtml);
                     }
                 });
             });

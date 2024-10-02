@@ -161,10 +161,22 @@ class StudentController extends Controller
 
     public function import(ImportStudentRequest $importRequest)
     {
-        Excel::import(new StudentsImport, $importRequest->all());
-
-        return back()->with('success', 'Import thành công!');
+        // Tạo instance của lớp import
+        $import = new StudentsImport();
+    
+        // Thực hiện quá trình import
+        Excel::import($import, $importRequest->file('file'));
+    
+        // Kiểm tra xem có lỗi nào không sau khi import
+        if ($errors = $import->getErrors()) {
+            // Nếu có lỗi, chuyển hướng về trang trước với các lỗi
+            return redirect()->back()->withErrors($errors);
+        }
+    
+        // Nếu không có lỗi, chuyển hướng về trang trước với thông báo thành công
+        return redirect()->back()->with('success', 'Import thành công!');
     }
+    
     public function scoreTable(){
         $students = $this->studentRepository->getAll();
         $subjects = $this->subjectRepository->getAll();
